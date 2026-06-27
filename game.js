@@ -146,7 +146,7 @@ function revivePlayer() {
     // Activate the listener right when they click the button and go to the ad tab
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
-    // Backup: If they don't leave the tab or if the popunder doesn't steal focus, revive after 1 second anyway
+    // Backup: If they don't leave the tab or if the popunder doesn't steal focus, revive after 5 second anyway
     setTimeout(() => {
         if (waitingToRevive) {
             isGameOver = false;
@@ -157,7 +157,7 @@ function revivePlayer() {
             waitingToRevive = false;
             document.removeEventListener('visibilitychange', handleVisibilityChange);
         }
-    }, 1000);
+    }, 5000);
 }
 
 // Event listeners to handle button clicks
