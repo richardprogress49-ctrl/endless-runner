@@ -20,7 +20,7 @@ let gameInterval;
 let highScore = localStorage.getItem('arcadeHighScore') || 0;
 highScoreDisplay.innerText = highScore;
 
-// 1. CONTROL PLAYER MOVEMENT
+// 1. LAPTOP CONTROLS (Keyboard Left & Right Arrow Keys)
 document.addEventListener('keydown', (event) => {
     if (isGameOver) return; 
 
@@ -33,7 +33,25 @@ document.addEventListener('keydown', (event) => {
     player.style.left = playerX + 'px';
 });
 
-// 2. THE MAIN GAME LOOP
+// 2. MOBILE TOUCH CONTROLS (Tap Left or Right side of screen)
+document.addEventListener('touchstart', (event) => {
+    if (isGameOver) return;
+
+    // Get the X coordinate of where the screen was tapped
+    const touchX = event.touches[0].clientX;
+    // Get the middle point of the screen width
+    const screenMiddle = window.innerWidth / 2;
+
+    if (touchX < screenMiddle && playerX > 0) {
+        playerX -= 40; // Tapped left side -> Move Left
+    } else if (touchX >= screenMiddle && playerX < 360) {
+        playerX += 40; // Tapped right side -> Move Right
+    }
+
+    player.style.left = playerX + 'px';
+});
+
+// 3. THE MAIN GAME LOOP
 function gameLoop() {
     if (isGameOver) return;
 
@@ -54,11 +72,11 @@ function gameLoop() {
         if (score > highScore) {
             highScore = score;
             highScoreDisplay.innerText = highScore;
-            localStorage.setItem('arcadeHighScore', highScore); // Saves to laptop memory
+            localStorage.setItem('arcadeHighScore', highScore); 
         }
     }
 
-    // 3. COLLISION DETECTION
+    // 4. COLLISION DETECTION
     if (obstacleY >= 510 && obstacleY <= 570) {
         if (Math.abs(obstacleX - playerX) < 35) {
             endGame();
@@ -66,7 +84,7 @@ function gameLoop() {
     }
 }
 
-// 4. GAME OVER
+// 5. GAME OVER
 function endGame() {
     isGameOver = true;
     clearInterval(gameInterval); 
@@ -74,7 +92,7 @@ function endGame() {
     gameOverScreen.style.display = 'flex'; 
 }
 
-// 5. RESTART GAME
+// 6. RESTART GAME
 function restartGame() {
     score = 0;
     obstacleSpeed = 5;
@@ -91,7 +109,7 @@ function restartGame() {
     gameInterval = setInterval(gameLoop, 20); 
 }
 
-// 6. REVIVE PLAYER
+// 7. REVIVE PLAYER
 function revivePlayer() {
     alert("🎬 Simulation: Loading Rewarded Video Ad...");
     alert("Ad complete! You've been revived. Keep going!");
