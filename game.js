@@ -34,23 +34,24 @@ document.addEventListener('keydown', (event) => {
 });
 
 // 2. MOBILE TOUCH CONTROLS (Tap Left or Right side of screen)
+// 2. MOBILE TOUCH CONTROLS (Upgraded for responsive screens)
 document.addEventListener('touchstart', (event) => {
     if (isGameOver) return;
+    
+    // Prevents the phone from scrolling or dragging the page while playing
+    event.preventDefault(); 
 
-    // Get the X coordinate of where the screen was tapped
     const touchX = event.touches[0].clientX;
-    // Get the middle point of the screen width
     const screenMiddle = window.innerWidth / 2;
 
-    if (touchX < screenMiddle && playerX > 0) {
-        playerX -= 40; // Tapped left side -> Move Left
-    } else if (touchX >= screenMiddle && playerX < 360) {
-        playerX += 40; // Tapped right side -> Move Right
+    if (touchX < screenMiddle) {
+        if (playerX > 0) playerX -= 40; // Move Left
+    } else {
+        if (playerX < 360) playerX += 40; // Move Right
     }
 
     player.style.left = playerX + 'px';
-});
-
+}, { passive: false }); // Essential flag to allow event.preventDefault() to work
 // 3. THE MAIN GAME LOOP
 function gameLoop() {
     if (isGameOver) return;
