@@ -112,24 +112,52 @@ function restartGame() {
 
 // 7. REAL ADSTERRA REVIVE PLAYER
 function revivePlayer() {
-    // 1. Unfreeze the game state
-    isGameOver = false;
-    
-    // 2. Clear out the old interval loop to prevent the game from running double speed
-    clearInterval(gameInterval);
-    
-    // 3. Move the obstacle back to the top so it doesn't immediately crash into you again
-    obstacleY = -150; 
-    obstacleX = Math.floor(Math.random() * 10) * 40;
-    if (obstacleX >= 400) obstacleX = 360;
-    obstacle.style.left = obstacleX + 'px';
-    obstacle.style.top = obstacleY + 'px';
-    
-    // 4. Hide the game over overlay screen
-    gameOverScreen.style.display = 'none';
-    
-    // 5. Restart the game ticks
-    gameInterval = setInterval(gameLoop, 20); 
+    // Flag to check if the player is waiting for a revive
+    let waitingToRevive = true;
+
+    // Listen for when the user switches tabs back to the game
+    const handleVisibilityChange = () => {
+        if (!document.hidden && waitingToRevive) {
+            // 1. Unfreeze the game state
+            isGameOver = false;
+            
+            // 2. Clear old loops
+            clearInterval(gameInterval);
+            
+            // 3. Reset obstacle positions out of the way
+            obstacleY = -150; 
+            obstacleX = Math.floor(Math.random() * 10) * 40;
+            if (obstacleX >= 400) obstacleX = 360;
+            obstacle.style.left = obstacleX + 'px';
+            obstacle.style.top = obstacleY + 'px';
+            
+            // 4. Hide the game over screen
+            gameOverScreen.style.display = 'none';
+            
+            // 5. Restart the game ticks
+            gameInterval = setInterval(gameLoop, 20); 
+            
+            // Clean up the event listener so it doesn't run again accidentally
+            waitingToRevive = false;
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        }
+    };
+
+    // Activate the listener right when they click the button and go to the ad tab
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // Backup: If they don't leave the tab or if the popunder doesn't steal focus, revive after 1 second anyway
+    setTimeout(() => {
+        if (waitingToRevive) {
+            isGameOver = false;
+            clearInterval(gameInterval);
+            obstacleY = -150;
+            gameOverScreen.style.display = 'none';
+            gameInterval = setInterval(gameLoop, 20);
+            waitingToRevive = false;
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        }
+    }, 1000);
 }
 
 // Event listeners to handle button clicks
