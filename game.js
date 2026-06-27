@@ -34,7 +34,6 @@ document.addEventListener('keydown', (event) => {
 });
 
 // 2. MOBILE TOUCH CONTROLS (Tap Left or Right side of screen)
-// 2. MOBILE TOUCH CONTROLS (Upgraded for responsive screens)
 document.addEventListener('touchstart', (event) => {
     if (isGameOver) return;
     
@@ -51,7 +50,8 @@ document.addEventListener('touchstart', (event) => {
     }
 
     player.style.left = playerX + 'px';
-}, { passive: false }); // Essential flag to allow event.preventDefault() to work
+}, { passive: false });
+
 // 3. THE MAIN GAME LOOP
 function gameLoop() {
     if (isGameOver) return;
@@ -110,20 +110,32 @@ function restartGame() {
     gameInterval = setInterval(gameLoop, 20); 
 }
 
-// 7. REVIVE PLAYER
+// 7. REAL ADSTERRA REVIVE PLAYER
 function revivePlayer() {
-    alert("🎬 Simulation: Loading Rewarded Video Ad...");
-    alert("Ad complete! You've been revived. Keep going!");
-    
+    // 1. Unfreeze the game state
     isGameOver = false;
-    obstacleY = -100; 
+    
+    // 2. Clear out the old interval loop to prevent the game from running double speed
+    clearInterval(gameInterval);
+    
+    // 3. Move the obstacle back to the top so it doesn't immediately crash into you again
+    obstacleY = -150; 
+    obstacleX = Math.floor(Math.random() * 10) * 40;
+    if (obstacleX >= 400) obstacleX = 360;
+    obstacle.style.left = obstacleX + 'px';
+    obstacle.style.top = obstacleY + 'px';
+    
+    // 4. Hide the game over overlay screen
     gameOverScreen.style.display = 'none';
     
+    // 5. Restart the game ticks
     gameInterval = setInterval(gameLoop, 20); 
 }
 
+// Event listeners to handle button clicks
 restartBtn.addEventListener('click', restartGame);
 reviveBtn.addEventListener('click', revivePlayer);
 
-// Start game
+// Initial start of the game
+clearInterval(gameInterval);
 gameInterval = setInterval(gameLoop, 20);
